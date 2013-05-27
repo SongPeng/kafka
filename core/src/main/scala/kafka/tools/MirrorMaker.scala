@@ -143,7 +143,7 @@ object MirrorMaker extends Logging {
           producer.send(pd)
         }
       } catch {
-        case e =>
+        case e: Throwable =>
           fatal("%s stream unexpectedly exited.", e)
       } finally {
         shutdownLatch.countDown()

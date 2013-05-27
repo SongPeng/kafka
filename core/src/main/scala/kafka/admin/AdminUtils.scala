@@ -32,6 +32,7 @@ import mutable.ListBuffer
 import scala.collection.mutable
 import kafka.common._
 import scala.Some
+import scala.util.control.NonFatal
 
 object AdminUtils extends Logging {
   val rand = new Random
@@ -130,7 +131,7 @@ object AdminUtils extends Logging {
       debug("Updated path %s with %s for replica assignment".format(zkPath, jsonPartitionData))
     } catch {
       case e: ZkNodeExistsException => throw new TopicExistsException("topic %s already exists".format(topic))
-      case e2 => throw new AdminOperationException(e2.toString)
+      case NonFatal(e2) => throw new AdminOperationException(e2.toString)
     }
   }
   
@@ -168,10 +169,10 @@ object AdminUtils extends Logging {
     if(str != null) {
       Json.parseFull(str) match {
         case None => // there are no config overrides
-        case Some(map: Map[String, _]) => 
+        case Some(map: Map[String, _]@unchecked) =>
           require(map("version") == 1)
           map.get("config") match {
-            case Some(config: Map[String, String]) =>
+            case Some(config: Map[String, String]@unchecked) =>
               for((k,v) <- config)
                 props.setProperty(k, v)
             case _ => throw new IllegalArgumentException("Invalid topic config: " + str)
@@ -214,7 +215,7 @@ object AdminUtils extends Logging {
               try {
                 Some(getBrokerInfoFromCache(zkClient, cachedBrokerInfo, List(l)).head)
               } catch {
-                case e => throw new LeaderNotAvailableException("Leader not available for topic %s partition %d".format(topic, partition), e)
+                case NonFatal(e) => throw new LeaderNotAvailableException("Leader not available for topic %s partition %d".format(topic, partition), e)
               }
             case None => throw new LeaderNotAvailableException("No leader exists for partition " + partition)
           }
@@ -222,7 +223,7 @@ object AdminUtils extends Logging {
             replicaInfo = getBrokerInfoFromCache(zkClient, cachedBrokerInfo, replicas.map(id => id.toInt))
             isrInfo = getBrokerInfoFromCache(zkClient, cachedBrokerInfo, inSyncReplicas)
           } catch {
-            case e => throw new ReplicaNotAvailableException(e)
+            case NonFatal(e) => throw new ReplicaNotAvailableException(e)
           }
           if(replicaInfo.size < replicas.size)
             throw new ReplicaNotAvailableException("Replica information not available for following brokers: " +
@@ -232,7 +233,7 @@ object AdminUtils extends Logging {
               inSyncReplicas.filterNot(isrInfo.map(_.id).contains(_)).mkString(","))
           new PartitionMetadata(partition, leaderInfo, replicaInfo, isrInfo, ErrorMapping.NoError)
         } catch {
-          case e =>
+          case NonFatal(e) =>
             error("Error while fetching metadata for partition [%s,%d]".format(topic, partition), e)
             new PartitionMetadata(partition, leaderInfo, replicaInfo, isrInfo,
               ErrorMapping.codeFor(e.getClass.asInstanceOf[Class[Throwable]]))

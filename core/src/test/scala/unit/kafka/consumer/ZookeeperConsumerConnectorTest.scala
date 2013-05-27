@@ -32,6 +32,7 @@ import kafka.utils._
 import kafka.producer.{ProducerConfig, KeyedMessage, Producer}
 import java.util.{Collections, Properties}
 import kafka.utils.TestUtils._
+import scala.util.control.NonFatal
 
 class ZookeeperConsumerConnectorTest extends JUnit3Suite with KafkaServerTestHarness with Logging {
 
@@ -83,7 +84,7 @@ class ZookeeperConsumerConnectorTest extends JUnit3Suite with KafkaServerTestHar
         fail("should get an exception")
       } catch {
         case e: ConsumerTimeoutException => // this is ok
-        case e => throw e
+        case NonFatal(e) => throw e
       }
     }
 

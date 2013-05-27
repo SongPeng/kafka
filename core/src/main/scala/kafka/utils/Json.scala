@@ -3,6 +3,7 @@ package kafka.utils
 import kafka.common._
 import scala.collection._
 import util.parsing.json.JSON
+import scala.util.control.NonFatal
 
 /**
  *  A wrapper that synchronizes JSON in scala, which is not threadsafe.
@@ -20,7 +21,7 @@ object Json extends Logging {
       try {
         JSON.parseFull(input)
       } catch {
-        case t =>
+        case NonFatal(t) =>
           throw new KafkaException("Can't parse json string: %s".format(input), t)
       }
     }

@@ -19,7 +19,7 @@ package kafka.javaapi.message
 import java.util.concurrent.atomic.AtomicLong
 import scala.reflect.BeanProperty
 import java.nio.ByteBuffer
-import kafka.message._
+import kafka.message.{MessageSet => _, _}
 import collection.JavaConverters._
 
 class ByteBufferMessageSet(@BeanProperty val buffer: ByteBuffer) extends MessageSet {

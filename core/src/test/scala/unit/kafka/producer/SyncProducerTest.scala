@@ -178,7 +178,7 @@ class SyncProducerTest extends JUnit3Suite with KafkaServerTestHarness {
       Assert.fail("Should have received timeout exception since request handling is stopped.")
     } catch {
       case e: SocketTimeoutException => /* success */
-      case e => Assert.fail("Unexpected exception when expecting timeout: " + e)
+      case e: Throwable => Assert.fail("Unexpected exception when expecting timeout: " + e)
     }
     val t2 = SystemTime.milliseconds
     // make sure we don't wait fewer than timeoutMs for a response

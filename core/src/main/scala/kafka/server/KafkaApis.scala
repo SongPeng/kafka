@@ -179,7 +179,7 @@ class KafkaApis(val requestChannel: RequestChannel,
     
     def errorCode = error match {
       case None => ErrorMapping.NoError
-      case Some(error) => ErrorMapping.codeFor(error.getClass.asInstanceOf[Class[Throwable]])
+      case Some(err) => ErrorMapping.codeFor(err.getClass.asInstanceOf[Class[Throwable]])
     }
   }
 
@@ -222,7 +222,7 @@ class KafkaApis(val requestChannel: RequestChannel,
         case nle: NotLeaderForPartitionException =>
           warn(nle.getMessage)
           new ProduceResult(topicAndPartition, nle)
-        case e =>
+        case e: Throwable =>
           BrokerTopicStats.getBrokerTopicStats(topicAndPartition.topic).failedProduceRequestRate.mark()
           BrokerTopicStats.getBrokerAllTopicsStats.failedProduceRequestRate.mark()
           error("Error processing ProducerRequest with correlation id %d from client %s on %s:%d"
@@ -308,7 +308,7 @@ class KafkaApis(val requestChannel: RequestChannel,
             case nle: NotLeaderForPartitionException =>
               warn(nle.getMessage)
               new FetchResponsePartitionData(ErrorMapping.codeFor(nle.getClass.asInstanceOf[Class[Throwable]]), -1L, MessageSet.Empty)
-            case t =>
+            case t: Throwable =>
               BrokerTopicStats.getBrokerTopicStats(topic).failedFetchRequestRate.mark()
               BrokerTopicStats.getBrokerAllTopicsStats.failedFetchRequestRate.mark()
               error("error when processing request " + (topic, partition, offset, fetchSize), t)
@@ -385,7 +385,7 @@ class KafkaApis(val requestChannel: RequestChannel,
         case nle: NotLeaderForPartitionException =>
           warn(nle.getMessage)
           (topicAndPartition, PartitionOffsetsResponse(ErrorMapping.codeFor(nle.getClass.asInstanceOf[Class[Throwable]]), Nil) )
-        case e =>
+        case e: Throwable =>
           warn("Error while responding to offset request", e)
           (topicAndPartition, PartitionOffsetsResponse(ErrorMapping.codeFor(e.getClass.asInstanceOf[Class[Throwable]]), Nil) )
       }
@@ -484,7 +484,7 @@ class KafkaApis(val requestChannel: RequestChannel,
                 }
               }
             } catch {
-              case e => error("Error while retrieving topic metadata", e)
+              case e: Throwable => error("Error while retrieving topic metadata", e)
             }
           case _ => 
             error("Error while fetching topic metadata for topic " + topicAndMetadata.topic,
@@ -518,7 +518,7 @@ class KafkaApis(val requestChannel: RequestChannel,
             (topicAndPartition, ErrorMapping.NoError)
           }
         } catch {
-          case e => (topicAndPartition, ErrorMapping.codeFor(e.getClass.asInstanceOf[Class[Throwable]]))
+          case e: Throwable => (topicAndPartition, ErrorMapping.codeFor(e.getClass.asInstanceOf[Class[Throwable]]))
         }
       }
     }
@@ -547,7 +547,7 @@ class KafkaApis(val requestChannel: RequestChannel,
                           ErrorMapping.UnknownTopicOrPartitionCode))
         }
       } catch {
-        case e => 
+        case e: Throwable =>
           (t, OffsetMetadataAndError(OffsetMetadataAndError.InvalidOffset, OffsetMetadataAndError.NoMetadata,
              ErrorMapping.codeFor(e.getClass.asInstanceOf[Class[Throwable]])))
       }

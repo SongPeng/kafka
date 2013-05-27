@@ -31,6 +31,7 @@ import kafka.admin.AdminUtils
 import util.Properties
 import kafka.api.FetchRequestBuilder
 import kafka.common.{KafkaException, ErrorMapping, FailedToSendMessageException}
+import scala.util.control.NonFatal
 
 
 class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
@@ -100,7 +101,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
       fail("Test should fail because the broker list provided are not valid")
     } catch {
       case e: KafkaException =>
-      case oe => fail("fails with exception", oe)
+      case NonFatal(oe) => fail("fails with exception", oe)
     } finally {
       producer1.close()
     }
@@ -113,7 +114,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
     try{
       producer2.send(new KeyedMessage[String, String]("new-topic", "test", "test1"))
     } catch {
-      case e => fail("Should succeed sending the message", e)
+      case NonFatal(e) => fail("Should succeed sending the message", e)
     } finally {
       producer2.close()
     }
@@ -126,7 +127,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
     try{
       producer3.send(new KeyedMessage[String, String]("new-topic", "test", "test1"))
     } catch {
-      case e => fail("Should succeed sending the message", e)
+      case NonFatal(e) => fail("Should succeed sending the message", e)
     } finally {
       producer3.close()
     }
@@ -183,7 +184,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
     }
     catch {
       case se: FailedToSendMessageException => true
-      case e => fail("Not expected", e)
+      case NonFatal(e) => fail("Not expected", e)
     }
     finally {
       producer2.close()
@@ -223,7 +224,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
       producer.send(new KeyedMessage[String, String]("new-topic", "test", "test1"))
       fail("Should fail since no leader exists for the partition.")
     } catch {
-      case e => // success
+      case NonFatal(e) => // success
     }
 
     // restart server 1
@@ -272,7 +273,7 @@ class ProducerTest extends JUnit3Suite with ZooKeeperTestHarness with Logging{
       assertTrue("Message set should have 1 message", messageSet1.hasNext)
       assertEquals(new Message("test".getBytes), messageSet1.next.message)
     } catch {
-      case e => case e: Exception => producer.close; fail("Not expected", e)
+      case e:Throwable => case e: Exception => producer.close; fail("Not expected", e)
     }
 
     // stop IO threads and request handling, but leave networking operational

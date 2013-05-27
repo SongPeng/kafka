@@ -59,7 +59,7 @@ class ZookeeperLeaderElector(controllerContext: ControllerContext, electionPath:
         if (data != null) {
           leaderId = data.toInt
         }
-      case e2 =>
+      case e2: Throwable =>
         error("Error while electing or becoming leader on broker %d".format(brokerId), e2)
         resign()
     }
