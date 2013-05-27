@@ -169,7 +169,7 @@ class Log(val dir: File,
     }
 
     // Check for the index file of every segment, if it's empty or its last offset is greater than its base offset.
-    for (s <- asIterable(logSegments.values)) {
+    for (s <- collectionAsScalaIterableConverter(logSegments.values).asScala) {
       require(s.index.entries == 0 || s.index.lastOffset > s.index.baseOffset,
               "Corrupt index found, index file (%s) has non-zero size but the last offset is %d and the base offset is %d"
               .format(s.index.file.getAbsolutePath, s.index.lastOffset, s.index.baseOffset))

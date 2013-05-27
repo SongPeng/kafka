@@ -154,7 +154,7 @@ object AdminUtils extends Logging {
    */
   private def writeTopicConfig(zkClient: ZkClient, topic: String, config: Properties) {
     if(config.size > 0) {
-      val map = Map("version" -> 1, "config" -> JavaConversions.asMap(config))
+      val map = Map("version" -> 1, "config" -> JavaConversions.mapAsScalaMap(config))
       ZkUtils.updatePersistentPath(zkClient, ZkUtils.getTopicConfigPath(topic), Json.encode(map))
     }
   }

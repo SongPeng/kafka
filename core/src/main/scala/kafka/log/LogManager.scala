@@ -208,7 +208,7 @@ class LogManager(val logDirs: Array[File],
            .format(topicAndPartition.topic, 
                    topicAndPartition.partition, 
                    dataDir.getAbsolutePath,
-                   JavaConversions.asMap(config.toProps).mkString(", ")))
+                   JavaConversions.mapAsScalaMap(config.toProps).mkString(", ")))
       log
     }
   }

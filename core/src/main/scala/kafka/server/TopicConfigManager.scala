@@ -77,7 +77,7 @@ class TopicConfigManager(private val zkClient: ZkClient,
    */
   private def processAllConfigChanges() {
     val configChanges = zkClient.getChildren(ZkUtils.TopicConfigChangesPath)
-    processConfigChanges(JavaConversions.asBuffer(configChanges).sorted)
+    processConfigChanges(JavaConversions.asScalaBuffer(configChanges).sorted)
   }
 
   /**
@@ -123,7 +123,7 @@ class TopicConfigManager(private val zkClient: ZkClient,
   object ConfigChangeListener extends IZkChildListener {
     override def handleChildChange(path: String, chillins: java.util.List[String]) {
       try {
-        processConfigChanges(JavaConversions.asBuffer(chillins))
+        processConfigChanges(JavaConversions.asScalaBuffer(chillins))
       } catch {
         case e: Exception => error("Error processing config change:", e)
       }

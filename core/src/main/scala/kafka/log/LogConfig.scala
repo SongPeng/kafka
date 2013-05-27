@@ -133,8 +133,8 @@ object LogConfig {
    * Check that property names are valid
    */
   private def validateNames(props: Properties) {
-    for(name <- JavaConversions.asMap(props).keys)
-      require(LogConfig.ConfigNames.contains(name), "Unknown configuration \"%s\".".format(name))
+    for(name <- JavaConversions.mapAsScalaMap(props).keys)
+      require(LogConfig.ConfigNames.contains(name.toString), "Unknown configuration \"%s\".".format(name))
   }
   
   /**
