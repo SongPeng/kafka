@@ -22,6 +22,7 @@ import org.scalatest.junit.JUnit3Suite
 import java.util.concurrent.TimeUnit
 import junit.framework.Assert._
 import com.yammer.metrics.core.{MetricsRegistry, Clock}
+import org.apache.commons.math3.util.{Precision, MathUtils}
 
 class KafkaTimerTest extends JUnit3Suite {
 
@@ -36,8 +37,8 @@ class KafkaTimerTest extends JUnit3Suite {
       clock.addMillis(1000)
     }
     assertEquals(1, metric.getCount())
-    assertTrue((metric.getMax() - 1000).abs <= Double.Epsilon)
-    assertTrue((metric.getMin() - 1000).abs <= Double.Epsilon)
+    assertTrue((metric.getMax() - 1000).abs <= Precision.EPSILON)
+    assertTrue((metric.getMin() - 1000).abs <= Precision.EPSILON)
   }
 
   private class ManualClock extends Clock {

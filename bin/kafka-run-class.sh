@@ -29,10 +29,10 @@ ivyPath=$(echo "$USER_HOME/.ivy2/cache")
 snappy=$(echo "$ivyPath/org.xerial.snappy/snappy-java/bundles/snappy-java-1.0.4.1.jar")
 CLASSPATH=$CLASSPATH:$snappy
 
-library=$(echo "$ivyPath/org.scala-lang/scala-library/jars/scala-library-2.10.0.jar")
+library=$(echo "$ivyPath/org.scala-lang/scala-library/jars/scala-library-2.10.2-RC1.jar")
 CLASSPATH=$CLASSPATH:$library
 
-compiler=~$(echo "$ivyPath/org.scala-lang/scala-compiler/jars/scala-compiler-2.10.0.jar")
+compiler=~$(echo "$ivyPath/org.scala-lang/scala-compiler/jars/scala-compiler-2.10.2-RC1.jar")
 CLASSPATH=$CLASSPATH:$compiler
 
 log4j=$(echo "$ivyPath/log4j/log4j/jars/log4j-1.2.15.jar")
